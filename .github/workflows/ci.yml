@@ -17,13 +17,13 @@ env:
 
 jobs:
   clang-format:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - name: Get clang-format
-        run: sudo apt-get install -yqq clang-format-6.0
+        run: sudo apt-get install -yqq  clang-format-15
       - name: Applying clang-format for changed files
         run: |
           FILES=$(git diff --diff-filter=d --name-only ${{ github.event.pull_request.base.sha }} | grep ^include | grep -v nanorange\.hpp\$ || true)
