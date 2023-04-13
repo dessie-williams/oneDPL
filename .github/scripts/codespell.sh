@@ -11,7 +11,6 @@
 # See https://llvm.org/LICENSE.txt for license information.
 #
 ##===----------------------------------------------------------------------===##
-Set -e
 
 SCAN_TARGET=$1
 
