@@ -1,7 +1,5 @@
 name: oneDPL CI
 
-Set -e
-
 on:
   push:
     branches: [main]
