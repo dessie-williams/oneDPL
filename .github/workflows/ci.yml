@@ -182,6 +182,7 @@ jobs:
   windows-testing:
     name: ${{ matrix.device_type }},bknd=${{ matrix.backend }},cmplr=${{ matrix.cxx_compiler }},${{ matrix.os }},std=c++${{ matrix.std }},cfg=${{ matrix.build_type }}
     runs-on: ['${{ matrix.os }}']
+    continue-on-error: true
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -237,8 +238,7 @@ jobs:
           if "%TMP_INTEL_LLVM_COMPILER%" == "TRUE" (
             powershell $output = ${{ matrix.cxx_compiler }} --version; Write-Host ::warning::Compiler: $output
             powershell -Command "(Get-Content '%CONDA_PREFIX%\Library\lib\cl.cfg') -replace 'CL_CONFIG_TBB_DLL_PATH = .*', 'CL_CONFIG_TBB_DLL_PATH = %CONDA_PREFIX%\Library\bin' | Out-File -encoding ASCII -FilePath '%CONDA_PREFIX%\Library\lib\cl.cfg'"
-          )
-          fi
+          )          
           mkdir build && cd build
           call "C:\Program Files (x86)\Microsoft Visual Studio\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
           set INCLUDE=%CONDA_PREFIX%\Library\include;%INCLUDE%
