@@ -221,6 +221,7 @@ jobs:
       - name: Run testing
         shell: cmd
         run: |
+          set -e
           call %CONDA%/condabin/conda.bat activate base
           if "${{ matrix.backend }}" == "dpcpp" (
             set ninja_targets="build-onedpl-sycl_iterator-tests"
