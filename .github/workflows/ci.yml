@@ -234,7 +234,8 @@ jobs:
             set ninja_targets="build-onedpl-sycl_iterator-tests"
             set ctest_flags=-R sycl_iterator_.*\.pass
             echo ::warning::dpcpp backend is set. Compile and run only sycl_iterator tests
-          ) else (
+          ) 
+          else (
             set ninja_targets=build-onedpl-tests
           )
           if "${{ matrix.cxx_compiler }}" == "icpx" set TMP_INTEL_LLVM_COMPILER=TRUE
