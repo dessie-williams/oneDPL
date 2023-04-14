@@ -227,9 +227,8 @@ jobs:
           Copy-Item .\* -Recurse -Force -Destination ${env:WINDOWS_ROOT_DIR}
       - name: Run testing        
         run: |
-          cd ${env:WINDOWS_ROOT_DIR}
-          %CONDA%/condabin/conda.bat activate base                    
-          .\.github\scripts\win_matrix_test.ps1     
+          cd ${env:WINDOWS_ROOT_DIR}                              
+          .\.github\scripts\win_matrix_test.bat     
           
   macos-testing:
     name: HOST,bknd=${{ matrix.backend }},cmplr=${{ matrix.cxx_compiler }},${{ matrix.os }},std=c++${{ matrix.std }},cfg=${{ matrix.build_type }}
