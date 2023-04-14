@@ -1,6 +1,13 @@
 $ErrorActionPreference = 'Continue'
 
-
+set INCLUDE=%CONDA_PREFIX%\Library\include;%INCLUDE%
+set LIB=%CONDA_PREFIX%\Library\lib;%LIB%
+set PATH=%CONDA_PREFIX%\Library\lib;%PATH%
+set CPATH=%CONDA_PREFIX%\include
+set TBB_DLL_PATH=%CONDA_PREFIX%\Library\bin
+reg add HKLM\SOFTWARE\khronos\OpenCL\Vendors /v intelocl64.dll /t REG_DWORD /d 00000000
+          
+          
 # gmake program arguments
 $cmd_args = @"
 "C:\Program Files (x86)\Microsoft Visual Studio\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
