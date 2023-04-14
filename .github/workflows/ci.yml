@@ -209,21 +209,18 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install Intel® oneAPI Threading Building Blocks (oneTBB)
         shell: cmd
-        run: |
-          $ErrorActionPreference = 'Stop'
+        run: |          
           call %CONDA%/condabin/conda.bat activate base
           conda install -c intel tbb-devel
       - name: Install Intel® oneAPI DPC++/C++ Compiler
         if: matrix.cxx_compiler == 'icpx' || matrix.cxx_compiler == 'icx' || matrix.cxx_compiler == 'icx-cl' || matrix.cxx_compiler == 'dpcpp' || matrix.cxx_compiler == 'dpcpp-cl'
         shell: cmd
-        run: |
-          $ErrorActionPreference = 'Stop'
+        run: |          
           call %CONDA%/condabin/conda.bat activate base
           conda install -c intel dpcpp_win-64
       - name: Run testing
         shell: cmd
-        run: |
-          $ErrorActionPreference = 'Stop'
+        run: |          
           call %CONDA%/condabin/conda.bat activate base
           if "${{ matrix.backend }}" == "dpcpp" (
             set ninja_targets="build-onedpl-sycl_iterator-tests"
@@ -240,7 +237,8 @@ jobs:
           if "%TMP_INTEL_LLVM_COMPILER%" == "TRUE" (
             powershell $output = ${{ matrix.cxx_compiler }} --version; Write-Host ::warning::Compiler: $output
             powershell -Command "(Get-Content '%CONDA_PREFIX%\Library\lib\cl.cfg') -replace 'CL_CONFIG_TBB_DLL_PATH = .*', 'CL_CONFIG_TBB_DLL_PATH = %CONDA_PREFIX%\Library\bin' | Out-File -encoding ASCII -FilePath '%CONDA_PREFIX%\Library\lib\cl.cfg'"
-          )          
+          )
+          $ErrorActionPreference = 'Stop'
           mkdir build && cd build
           call "C:\Program Files (x86)\Microsoft Visual Studio\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
           set INCLUDE=%CONDA_PREFIX%\Library\include;%INCLUDE%
