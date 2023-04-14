@@ -220,7 +220,8 @@ jobs:
           conda install -c intel dpcpp_win-64
       - name: Run testing
         shell: cmd
-        run: |         
+        run: |
+          $ErrorActionPreference = ''Continue''
           call %CONDA%/condabin/conda.bat activate base
           if "${{ matrix.backend }}" == "dpcpp" (
             set ninja_targets="build-onedpl-sycl_iterator-tests"
@@ -248,7 +249,8 @@ jobs:
           reg add HKLM\SOFTWARE\khronos\OpenCL\Vendors /v intelocl64.dll /t REG_DWORD /d 00000000
           cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.std }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -DONEDPL_BACKEND=${{ matrix.backend }} -DONEDPL_DEVICE_TYPE=${{ matrix.device_type }} ..
           ninja -j 2 -v %ninja_targets%
-          ctest --timeout %TEST_TIMEOUT% -C ${{ matrix.build_type }} --output-on-failure %ctest_flags%          
+          ctest --timeout %TEST_TIMEOUT% -C ${{ matrix.build_type }} --output-on-failure %ctest_flags%
+          exit ${exit_code}
           
   macos-testing:
     name: HOST,bknd=${{ matrix.backend }},cmplr=${{ matrix.cxx_compiler }},${{ matrix.os }},std=c++${{ matrix.std }},cfg=${{ matrix.build_type }}
@@ -287,11 +289,3 @@ jobs:
             -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -DONEDPL_BACKEND=${{ matrix.backend }} ..
           make VERBOSE=1 build-onedpl-tests -j${MACOS_BUILD_CONCURRENCY}
           ctest --timeout ${TEST_TIMEOUT} --output-on-failure -E "${EXCLUDE_FROM_TESTING}"
-  collector:
-    needs: [windows-testing]
-    if: always()
-    runs-on: ['${{ matrix.os }}']
-    steps:
-    - name: check for failures
-      if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'Configuring incomplete')
-      run: echo job failed && exit 1
