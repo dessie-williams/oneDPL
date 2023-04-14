@@ -221,7 +221,7 @@ jobs:
       - name: Run testing
         shell: cmd
         run: |
-          $ErrorActionPreference = ''Continue''
+          $ErrorActionPreference = 'Continue'
           call %CONDA%/condabin/conda.bat activate base
           if "${{ matrix.backend }}" == "dpcpp" (
             set ninja_targets="build-onedpl-sycl_iterator-tests"
@@ -250,7 +250,7 @@ jobs:
           cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.std }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -DONEDPL_BACKEND=${{ matrix.backend }} -DONEDPL_DEVICE_TYPE=${{ matrix.device_type }} ..
           ninja -j 2 -v %ninja_targets%
           ctest --timeout %TEST_TIMEOUT% -C ${{ matrix.build_type }} --output-on-failure %ctest_flags%
-          exit ${exit_code}
+          exit ${LastExitCode}
           
   macos-testing:
     name: HOST,bknd=${{ matrix.backend }},cmplr=${{ matrix.cxx_compiler }},${{ matrix.os }},std=c++${{ matrix.std }},cfg=${{ matrix.build_type }}
