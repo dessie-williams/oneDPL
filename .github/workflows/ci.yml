@@ -227,7 +227,7 @@ jobs:
          Copy-Item .\* -Recurse -Force -Destination ${env:WINDOWS_ROOT_DIR}
       - name: Run testing  
         run: |
-          $ErrorActionPreference = ''Continue''
+          $ErrorActionPreference = 'Continue'
           cd ${env:WINDOWS_ROOT_DIR}
           cmd /c %CONDA%/condabin/conda.bat activate base
           if "${{ matrix.backend }}" == "dpcpp" (
