@@ -180,6 +180,8 @@ jobs:
           ctest --timeout ${TEST_TIMEOUT} --output-on-failure ${ctest_flags}
 
   windows-testing:
+    env:
+      WINDOWS_ROOT_DIR: C:\temp\onetbb-ci
     name: ${{ matrix.device_type }},bknd=${{ matrix.backend }},cmplr=${{ matrix.cxx_compiler }},${{ matrix.os }},std=c++${{ matrix.std }},cfg=${{ matrix.build_type }}
     runs-on: ['${{ matrix.os }}']    
     timeout-minutes: 60
