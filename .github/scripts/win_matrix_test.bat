@@ -1,6 +1,6 @@
 @echo off
 
-call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
 set INCLUDE=%CONDA_PREFIX%\Library\include;%INCLUDE%
 set LIB=%CONDA_PREFIX%\Library\lib;%LIB%
 set PATH=%CONDA_PREFIX%\Library\lib;%PATH%
