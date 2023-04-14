@@ -218,11 +218,16 @@ jobs:
         run: |          
           call %CONDA%/condabin/conda.bat activate base
           conda install -c intel dpcpp_win-64
-      - name: Run testing
-        shell: cmd
-        run: |          
+      - name: Prepare working directory
+        run: |
+          if (Test-Path ${env:WINDOWS_ROOT_DIR}) { rm -r -Force ${env:WINDOWS_ROOT_DIR} }
+          mkdir ${env:WINDOWS_ROOT_DIR}
+          Copy-Item .\* -Recurse -Force -Destination ${env:WINDOWS_ROOT_DIR}
+      - name: Run testing        
+        run: |
+          cd ${env:WINDOWS_ROOT_DIR}
           call %CONDA%/condabin/conda.bat activate base                    
-          /.github/scripts/win_matrix_test.ps1     
+          .\.github\scripts\win_matrix_test.ps1     
           
   macos-testing:
     name: HOST,bknd=${{ matrix.backend }},cmplr=${{ matrix.cxx_compiler }},${{ matrix.os }},std=c++${{ matrix.std }},cfg=${{ matrix.build_type }}
