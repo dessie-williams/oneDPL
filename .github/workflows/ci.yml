@@ -228,7 +228,7 @@ jobs:
       - name: Run testing        
         run: |
           cd ${env:WINDOWS_ROOT_DIR}
-          call %CONDA%/condabin/conda.bat activate base                    
+          %CONDA%/condabin/conda.bat activate base                    
           .\.github\scripts\win_matrix_test.ps1     
           
   macos-testing:
