@@ -182,7 +182,7 @@ jobs:
   windows-testing:    
     name: ${{ matrix.device_type }},bknd=${{ matrix.backend }},cmplr=${{ matrix.cxx_compiler }},${{ matrix.os }},std=c++${{ matrix.std }},cfg=${{ matrix.build_type }}
     runs-on: ['${{ matrix.os }}']
-    continue-on-error: true
+    continue-on-error: false
     timeout-minutes: 60
     strategy:
       fail-fast: false
