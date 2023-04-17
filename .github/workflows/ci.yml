@@ -220,8 +220,7 @@ jobs:
           conda install -c intel dpcpp_win-64 
       - name: Run testing
         shell: cmd
-        run: |
-          continue-on-error: ${{ matrix.include }}
+        run: |          
           call %CONDA%/condabin/conda.bat activate base
           if "${{ matrix.backend }}" == "dpcpp" (
             set ninja_targets="build-onedpl-sycl_iterator-tests"
@@ -241,6 +240,7 @@ jobs:
           )
           mkdir build && cd build
           call "C:\Program Files (x86)\Microsoft Visual Studio\\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          if not exist "C:\Program Files (x86)\Microsoft Visual Studio\\Enterprise\VC\Auxiliary\Build\vcvarsall.bat exit 1
           set INCLUDE=%CONDA_PREFIX%\Library\include;%INCLUDE%
           set LIB=%CONDA_PREFIX%\Library\lib;%LIB%
           set PATH=%CONDA_PREFIX%\Library\lib;%PATH%
