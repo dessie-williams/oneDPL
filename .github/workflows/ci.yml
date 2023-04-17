@@ -194,21 +194,21 @@ jobs:
             build_type: release
             backend: tbb
             device_type: HOST
-            experimental: true
+            experimental: false
           - os: windows-2019
             cxx_compiler: cl
             std: 17
             build_type: release
             backend: tbb
             device_type: HOST
-            experimental: true
+            experimental: false
           - os: windows-2019
             cxx_compiler: icpx
             std: 17
             build_type: release
             backend: dpcpp
             device_type: CPU
-            experimental: true
+            experimental: false
     steps:
       - uses: actions/checkout@v3
       - name: Install Intel® oneAPI Threading Building Blocks (oneTBB)
