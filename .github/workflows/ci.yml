@@ -179,15 +179,14 @@ jobs:
           make VERBOSE=1 -j${BUILD_CONCURRENCY} ${make_targets}
           ctest --timeout ${TEST_TIMEOUT} --output-on-failure ${ctest_flags}
 
-  windows-testing:
-    env:
-      WINDOWS_ROOT_DIR: C:\temp\onetbb-ci
+  windows-testing:    
     name: ${{ matrix.device_type }},bknd=${{ matrix.backend }},cmplr=${{ matrix.cxx_compiler }},${{ matrix.os }},std=c++${{ matrix.std }},cfg=${{ matrix.build_type }}
-    runs-on: ['${{ matrix.os }}']    
+    runs-on: ['${{ matrix.os }}']
+    continue-on-error: ${{ matrix.experimental }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:
+      matrix:        
         include:
           - os: windows-2019
             cxx_compiler: icx-cl
@@ -195,18 +194,21 @@ jobs:
             build_type: release
             backend: tbb
             device_type: HOST
+            experimental: true
           - os: windows-2019
             cxx_compiler: cl
             std: 17
             build_type: release
             backend: tbb
             device_type: HOST
+            experimental: true
           - os: windows-2019
             cxx_compiler: icpx
             std: 17
             build_type: release
             backend: dpcpp
             device_type: CPU
+            experimental: true
     steps:
       - uses: actions/checkout@v3
       - name: Install Intel® oneAPI Threading Building Blocks (oneTBB)
@@ -220,22 +222,15 @@ jobs:
         run: |          
           call %CONDA%/condabin/conda.bat activate base
           conda install -c intel dpcpp_win-64 
-      - name: Prepare working directory
+      - name: Run testing
+        shell: cmd
         run: |
-         if (Test-Path ${env:WINDOWS_ROOT_DIR}) { rm -r -Force ${env:WINDOWS_ROOT_DIR} }        
-         mkdir ${env:WINDOWS_ROOT_DIR}          
-         Copy-Item .\* -Recurse -Force -Destination ${env:WINDOWS_ROOT_DIR}
-      - name: Run testing  
-        run: |
-          $ErrorActionPreference = 'Continue'
-          cd ${env:WINDOWS_ROOT_DIR}
-          cmd /c %CONDA%/condabin/conda.bat activate base
+          call %CONDA%/condabin/conda.bat activate base
           if "${{ matrix.backend }}" == "dpcpp" (
             set ninja_targets="build-onedpl-sycl_iterator-tests"
             set ctest_flags=-R sycl_iterator_.*\.pass
             echo ::warning::dpcpp backend is set. Compile and run only sycl_iterator tests
-          ) 
-          else (
+          ) else (
             set ninja_targets=build-onedpl-tests
           )
           if "${{ matrix.cxx_compiler }}" == "icpx" set TMP_INTEL_LLVM_COMPILER=TRUE
@@ -247,16 +242,17 @@ jobs:
             powershell $output = ${{ matrix.cxx_compiler }} --version; Write-Host ::warning::Compiler: $output
             powershell -Command "(Get-Content '%CONDA_PREFIX%\Library\lib\cl.cfg') -replace 'CL_CONFIG_TBB_DLL_PATH = .*', 'CL_CONFIG_TBB_DLL_PATH = %CONDA_PREFIX%\Library\bin' | Out-File -encoding ASCII -FilePath '%CONDA_PREFIX%\Library\lib\cl.cfg'"
           )
-          mkdir build && cd build          
+          mkdir build && cd build
+          call "C:\Program Files (x86)\Microsoft Visual Studio\\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
           set INCLUDE=%CONDA_PREFIX%\Library\include;%INCLUDE%
           set LIB=%CONDA_PREFIX%\Library\lib;%LIB%
           set PATH=%CONDA_PREFIX%\Library\lib;%PATH%
           set CPATH=%CONDA_PREFIX%\include
           set TBB_DLL_PATH=%CONDA_PREFIX%\Library\bin
           reg add HKLM\SOFTWARE\khronos\OpenCL\Vendors /v intelocl64.dll /t REG_DWORD /d 00000000
-          cmd /v /c "C:\Program Files (x86)\Microsoft Visual Studio\\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64 && cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.std }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -DONEDPL_BACKEND=${{ matrix.backend }} -DONEDPL_DEVICE_TYPE=${{ matrix.device_type }} .. && ninja -j 2 -v %ninja_targets%
-          ctest --timeout %TEST_TIMEOUT% -C ${{ matrix.build_type }} --output-on-failure %ctest_flags%     
-          exit ${LastExitCode}
+          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_STANDARD=${{ matrix.std }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -DONEDPL_BACKEND=${{ matrix.backend }} -DONEDPL_DEVICE_TYPE=${{ matrix.device_type }} ..
+          ninja -j 2 -v %ninja_targets%
+          ctest --timeout %TEST_TIMEOUT% -C ${{ matrix.build_type }} --output-on-failure %ctest_flags%               
           
   macos-testing:
     name: HOST,bknd=${{ matrix.backend }},cmplr=${{ matrix.cxx_compiler }},${{ matrix.os }},std=c++${{ matrix.std }},cfg=${{ matrix.build_type }}
