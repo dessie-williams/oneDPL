@@ -186,7 +186,8 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:        
+      matrix:
+        experimental: [false]
         include:
           - os: windows-2019
             cxx_compiler: icx-cl
@@ -194,21 +195,21 @@ jobs:
             build_type: release
             backend: tbb
             device_type: HOST
-            experimental: false
+            experimental: true
           - os: windows-2019
             cxx_compiler: cl
             std: 17
             build_type: release
             backend: tbb
             device_type: HOST
-            experimental: false
+            experimental: true
           - os: windows-2019
             cxx_compiler: icpx
             std: 17
             build_type: release
             backend: dpcpp
             device_type: CPU
-            experimental: false
+            experimental: true
     steps:
       - uses: actions/checkout@v3
       - name: Install Intel® oneAPI Threading Building Blocks (oneTBB)
