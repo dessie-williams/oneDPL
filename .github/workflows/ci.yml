@@ -241,7 +241,7 @@ jobs:
           )             
       - name: Run testing
         run: |
-          ./.github/scripts/win_test.ps1       
+          ./.github/scripts/win_matrix_test.bat       
         
   macos-testing:
     name: HOST,bknd=${{ matrix.backend }},cmplr=${{ matrix.cxx_compiler }},${{ matrix.os }},std=c++${{ matrix.std }},cfg=${{ matrix.build_type }}
