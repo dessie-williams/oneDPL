@@ -3,20 +3,30 @@ $ErrorActionPreference = 'Continue'
 
 $cmd_args = @"
 call %CONDA%/condabin/conda.bat activate base
-if "${{ matrix.backend }}" == "dpcpp" (
+if (${env:matrix.backend} -eq 'dpcpp' {
   set ninja_targets="build-onedpl-sycl_iterator-tests"
   set ctest_flags=-R sycl_iterator_.*\.pass
   echo ::warning::dpcpp backend is set. Compile and run only sycl_iterator tests
-) else (
+} else {
   set ninja_targets=build-onedpl-tests
-)
-if "${{ matrix.cxx_compiler }}" == "icpx" set TMP_INTEL_LLVM_COMPILER=TRUE
-if "${{ matrix.cxx_compiler }}" == "icx" set TMP_INTEL_LLVM_COMPILER=TRUE
-if "${{ matrix.cxx_compiler }}" == "icx-cl" set TMP_INTEL_LLVM_COMPILER=TRUE
-if "${{ matrix.cxx_compiler }}" == "dpcpp" set TMP_INTEL_LLVM_COMPILER=TRUE
-if "${{ matrix.cxx_compiler }}" == "dpcpp-cl" set TMP_INTEL_LLVM_COMPILER=TRUE
+}
+if (${env:matrix.cxx_compiler} -eq 'icpx' {
+  set TMP_INTEL_LLVM_COMPILER=TRUE
+}
+if (${env:matrix.cxx_compiler} -eq 'icx' {
+  set TMP_INTEL_LLVM_COMPILER=TRUE
+}
+if (${env:matrix.cxx_compiler} -eq 'icx-cl' {
+  set TMP_INTEL_LLVM_COMPILER=TRUE
+}
+if (${env:matrix.cxx_compiler} -eq 'dpcpp' {
+  set TMP_INTEL_LLVM_COMPILER=TRUE
+}
+if (${env:matrix.cxx_compiler} -eq 'dpcpp-cl' {
+  set TMP_INTEL_LLVM_COMPILER=TRUE
+}
 if "%TMP_INTEL_LLVM_COMPILER%" == "TRUE" (
-  powershell $output = ${{ matrix.cxx_compiler }} --version; Write-Host ::warning::Compiler: $output
+  powershell $output = (${env:matrix.cxx_compiler} --version; Write-Host ::warning::Compiler: $output
   powershell -Command "(Get-Content '%CONDA_PREFIX%\Library\lib\cl.cfg') -replace 'CL_CONFIG_TBB_DLL_PATH = .*', 'CL_CONFIG_TBB_DLL_PATH = %CONDA_PREFIX%\Library\bin' | Out-File -encoding ASCII -FilePath '%CONDA_PREFIX%\Library\lib\cl.cfg'"
 )
 mkdir build && cd build
